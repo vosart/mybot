@@ -18,7 +18,7 @@ def greet_user(update, context):
     first_name = update.message['chat']['first_name']
     last_name = update.message['chat']['last_name']
     if last_name == None:
-        last_name = ''
+        last_name = '' # оказалось не у всех есть фамилии в телеге :)
     update.message.reply_text(f"Здравствуй, {first_name} {last_name}")
     #update.message.reply_text("Привет, пользователь! Ты вызвал команду /start") это как в уроке
     
