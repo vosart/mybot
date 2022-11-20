@@ -11,17 +11,10 @@ def talk_to_me(update, context):
 
 def greet_user(update, context):
     print("Вызван /start")
-    
-    #print(update) смотрел что же там за словарь и 
-    # решил добавить приветствие с именем подключившегося
-    
+        
     first_name = update.message['chat']['first_name']
-    last_name = update.message['chat']['last_name']
-    if last_name == None:
-        last_name = '' # оказалось не у всех есть фамилии в телеге :)
-    update.message.reply_text(f"Здравствуй, {first_name} {last_name}")
-    #update.message.reply_text("Привет, пользователь! Ты вызвал команду /start") это как в уроке
-    
+    last_name = update.message['chat']['last_name'] or ''
+    update.message.reply_text(f"Здравствуй, {first_name} {last_name.strip()}!")   
 
 def main():
     mybot = Updater(settings.API_KEY, use_context=True)
