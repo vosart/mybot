@@ -14,7 +14,7 @@ def talk_to_me(update, context):
     update.message.reply_text(user_text)
 
 def greet_user(update, context):
-    print("Вызван /start")
+    logger.debug("Вызван /start")
         
     first_name = update.message['chat']['first_name']
     last_name = update.message['chat']['last_name'] or ''
