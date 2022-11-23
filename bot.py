@@ -2,7 +2,11 @@ import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import settings
 
-logging.basicConfig(filename='bot.log', level=logging.INFO, encoding="UTF-8")
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 def talk_to_me(update, context):
     user_text = update.message.text
@@ -23,7 +27,7 @@ def main():
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     
-    logging.info("Бот стартовал")
+    logger.info("Бот стартовал")
     mybot.start_polling()
     mybot.idle()
 
