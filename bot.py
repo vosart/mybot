@@ -27,8 +27,8 @@ def constellation(update, context):
     user_text = update.message.text.split()
     planet = user_text[1]
     func = getattr(ephem, planet)
-    const = ephem.constellation(func(date.year))[1]
-    update.message.reply_text(f'{planet} в {date.year} году находится в создвездии {const}')
+    const = ephem.constellation(func(date))[1]
+    update.message.reply_text(f'{planet} сейчас находится в создвездии {const}')
 
 
 def main():
