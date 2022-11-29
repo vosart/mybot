@@ -32,12 +32,14 @@ def constellation(update, context):
         raise ValueError(update.message.reply_text('Вы не ввели планету!'))
     user_text = user_text.split()
     planet = user_text[1]
-    try:
-        planet_func = getattr(ephem, planet)
-        const = ephem.constellation(planet_func(date))[1]
-        update.message.reply_text('{planet} сейчас находится в создвездии {const}'.format(planet = planet, const = const))
-    except AttributeError:
-        update.message.reply_text(f'Такой планеты или спутника - {planet} нет в Солнечной системе!')
+
+    planet_func = getattr(ephem, planet, None)
+    if not planet_func:
+        return update.message.reply_text(f'Такой планеты или спутника - {planet} нет в Солнечной системе!')
+    const = ephem.constellation(planet_func(date))[1]
+    update.message.reply_text('{planet} сейчас находится в создвездии {const}'.format(planet = planet, const = const))
+
+
 
 # Счётчик слов в предложении
 def wordcount(update, context):
