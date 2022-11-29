@@ -4,6 +4,7 @@ import settings
 import ephem
 import datetime
 
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
@@ -19,26 +20,30 @@ def greet_user(update, context):
     logger.debug("Вызван /start")
     first_name = update.message['chat']['first_name']
     update.message.reply_text(f"Здравствуй, {first_name}!")
-    update.message.reply_text('Доступные команды: \n/start\n /planet Название планеты (например Mars)\n /wordcount\n /next_full_moon')
+    update.message.reply_text('Доступные команды: \n/start\n /planet\n /wordcount\n /next_full_moon')
 
-# Определение в каком созвездии находится планета Солнечной системы
+# Определение в каком созвездии находится небесное тело
 def constellation(update, context):
     logger.debug("Вызван /planet")
-    # потом добавить перечень всех объектов солнечной системы
-    # all_solar_bodies = [name for _0, _1, name in ephem._libastro.builtin_planets()]
-    date = datetime.datetime.now()
+    all_sol_bodies = [name for _0, _1, name in ephem._libastro.builtin_planets()]
+
     user_text = update.message.text
+
     if user_text[8:] == '':
-        raise ValueError(update.message.reply_text('Вы не ввели планету!'))
-    user_text = user_text.split()
-    planet = user_text[1]
-
-    planet_func = getattr(ephem, planet, None)
-    if not planet_func:
-        return update.message.reply_text(f'Такой планеты или спутника - {planet} нет в Солнечной системе!')
-    const = ephem.constellation(planet_func(date))[1]
-    update.message.reply_text('{planet} сейчас находится в создвездии {const}'.format(planet = planet, const = const))
-
+        raise ValueError(update.message.reply_text('Вы не ввели планету! Чтобы узнать доступные тела, введите /planet ?'))
+    elif user_text.split()[1] == '?':
+        update.message.reply_text('Список доступных тел: \n')
+        for pl in all_sol_bodies[:10]:
+            update.message.reply_text(pl)
+    else:
+        date = datetime.datetime.now()
+        user_text = user_text.split()
+        planet = user_text[1]
+        planet_func = getattr(ephem, planet, None)
+        if not planet_func:
+            return update.message.reply_text(f'Такой планеты или спутника - {planet} нет в Солнечной системе!')
+        const = ephem.constellation(planet_func(date))[1]
+        update.message.reply_text('{planet} сейчас находится в создвездии {const}'.format(planet = planet, const = const))
 
 
 # Счётчик слов в предложении
@@ -48,7 +53,7 @@ def wordcount(update, context):
     if user_text[11:] == '':
         raise ValueError(update.message.reply_text('Вы ничего не ввели!'))
     user_text = user_text[11:].split()
-    update.message.reply_text(f'В предложении {len(user_text)} слов')
+    update.message.reply_text('В предложении {length} слов'.format(length = len(user_text)))
 
 # Ближайшее полнолуние
 def next_full_moon(update, context):
