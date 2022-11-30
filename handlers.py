@@ -124,16 +124,16 @@ def last_litera(city):
 
 
 def next_city(list_city, user_city):
-    if user_city in list_city.keys():
-        del list_city[user_city]                    # заменить на поиск в context.user_data['cities']
-    else:
+    if user_city not in list_city.keys():
         return 'Про такой город я не знаю...'
-    #shuffle(list_city)
-    litera = last_litera(user_city)
-    for city, lit in list_city.items():
-        if litera == lit:
-            print(f'in function next_city() {lit} {city}')
-            return city
+    else:
+        del list_city[user_city]                    # заменить на поиск в context.user_data['cities']
+        #shuffle(list_city)
+        litera = last_litera(user_city)
+        for city, lit in list_city.items():
+            if litera == lit:
+                print(f'in function next_city() {lit} {city}')
+                return city
 
 def chosen_cities(city, user_data):
     if city not in user_data:
