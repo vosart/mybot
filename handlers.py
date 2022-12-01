@@ -127,9 +127,9 @@ def next_city(list_city, user_city):
     if user_city not in list_city.keys():
         return 'Про такой город я не знаю...'
     else:
-        del list_city[user_city]                    # заменить на поиск в context.user_data['cities']
-        #shuffle(list_city)
-        litera = last_litera(user_city)
+        del list_city[user_city]                    # заменить на поиск в context.user_data['cities']? # как делать отдельный словарь, для каждого подключившигося
+        #shuffle(list_city)                         # случайный выбор города на посл. букву
+        litera = last_litera(user_city)g
         for city, lit in list_city.items():
             if litera == lit:
                 print(f'in function next_city() {lit} {city}')
@@ -148,12 +148,14 @@ def chosen_cities(city, user_data):
 def city_game(update, context):
     logger.debug("Вызван /city_game")
     list_city = create_game_dict()
+    past_cities = []
     #stop_game_words = ['stop', 'стоп', 'хватит']
     if context.args:
         user_city = context.args[0]
-        context.user_data['cities'] = chosen_cities(user_city, context.user_data) # херня!!!
-        update.message.reply_text(f'Вы: {user_city}\n')
-        update.message.reply_text(f'Бот: {next_city(list_city, user_city)}\n')
+        if user_city not in past_cities:
+            context.user_data['cities'] = chosen_cities(user_city) # херня!!!
+            update.message.reply_text(f'Вы: {user_city}\n')
+            update.message.reply_text(f'Бот: {next_city(list_city, user_city)}\n')
     else:
         update.message.reply_text('Вы ничего не ввели!')
 
