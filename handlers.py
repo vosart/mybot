@@ -126,7 +126,6 @@ def last_litera(city):
 def next_city(list_city, user_city):
     if user_city not in list_city.keys():
         return 'Про такой город я не знаю...'    
-    #shuffle(list_city)                         # случайный выбор города на посл. букву
     for city, lit in list_city.items():
         if city.lower()[0] == last_litera(user_city):
             return city
