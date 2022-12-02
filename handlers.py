@@ -126,7 +126,7 @@ def last_litera(city):
 def next_city(list_city, user_city):
     if user_city not in list_city.keys():
         return 'Про такой город я не знаю...'    
-    for city, lit in list_city.items():
+    for city in list_city.keys():
         if city.lower()[0] == last_litera(user_city):
             return city
 
