@@ -106,7 +106,7 @@ def guess_number(update, context):
 
 def create_game_dict():
     list_of_cities = {}
-    with open('./rocid.csv/city.csv', 'r', encoding='cp1251') as f:
+    with open('city.csv', 'r', encoding='cp1251') as f:
         field = ["city_id", "country_id", "region_id", "name"]
         reader = csv.DictReader(f, field, delimiter=';')
         for row in reader:
@@ -125,37 +125,34 @@ def last_litera(city):
 
 def next_city(list_city, user_city):
     if user_city not in list_city.keys():
-        return 'Про такой город я не знаю...'
-    else:
-        del list_city[user_city]                    # заменить на поиск в context.user_data['cities']? # как делать отдельный словарь, для каждого подключившигося
-        #shuffle(list_city)                         # случайный выбор города на посл. букву
-        litera = last_litera(user_city)g
-        for city, lit in list_city.items():
-            if litera == lit:
-                print(f'in function next_city() {lit} {city}')
-                return city
-
-def chosen_cities(city, user_data):
-    if city not in user_data:
-        user_data['city'] = city
-        return user_data
-    return user_data['city']
+        return 'Про такой город я не знаю...'    
+    #shuffle(list_city)                         # случайный выбор города на посл. букву
+    for city, lit in list_city.items():
+        if city.lower()[0] == last_litera(user_city):
+            return city
 
 # добавление в context.user_data городов, которые называли и добавить на них проверку
-
 
 
 def city_game(update, context):
     logger.debug("Вызван /city_game")
     list_city = create_game_dict()
     past_cities = []
+    print('Города, которые уже называли: ', past_cities)
     #stop_game_words = ['stop', 'стоп', 'хватит']
     if context.args:
         user_city = context.args[0]
         if user_city not in past_cities:
-            context.user_data['cities'] = chosen_cities(user_city) # херня!!!
+            past_cities.append(user_city)
+            context.user_data['cities'] = past_cities 
+            print('context содержит - ', context.user_data['cities'])
             update.message.reply_text(f'Вы: {user_city}\n')
-            update.message.reply_text(f'Бот: {next_city(list_city, user_city)}\n')
+            bot_city = next_city(list_city, user_city)
+            past_cities.append(bot_city)
+            context.user_data['cities'].append(bot_city)
+            update.message.reply_text(f'Бот: {bot_city}\n')
+        else:
+            update.message.reply_text(f'Такой город уже называли')
     else:
         update.message.reply_text('Вы ничего не ввели!')
 
