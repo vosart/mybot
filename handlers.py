@@ -104,55 +104,75 @@ def guess_number(update, context):
 
 # Игра в города
 
-def create_game_dict():
-    list_of_cities = {}
-    with open('city.csv', 'r', encoding='cp1251') as f:
+def load_cities() -> dict[str, str]:
+    cities = {}
+    with open('cities.csv', 'r', encoding='cp1251') as f:
         field = ["city_id", "country_id", "region_id", "name"]
         reader = csv.DictReader(f, field, delimiter=';')
         for row in reader:
-            city = row['name']
-            list_of_cities[city] = last_litera(city)
-        return list_of_cities
+            city_name = row['name']
+            cities[city_name] = last_litera(city_name)
+        return cities
+
+# cities = {'a': ['Анапа', 'Анадырь']}
+# shuffle(cities[1])
 
 
-def last_litera(city):
-    stop_liters = ['ь', 'ъ', 'ы']
+def last_litera(city) -> str:
+    stop_liters = {'ь', 'ъ', 'ы'}
     if city[-1] not in stop_liters:
         return city[-1]
     else:
         return city[-2]
 
 
-def next_city(list_city, user_city):
-    if user_city not in list_city.keys():
-        return 'Про такой город я не знаю...'    
-    for city in list_city.keys():
-        if city.lower()[0] == last_litera(user_city):
-            return city
+def next_city(cities_in_game: dict[str, str], user_city) -> str: 
+    for city in cities_in_game.keys():
+        if city.lower()[0] == all_cities[user_city]:
+            return city             # возвращать список random choice
 
 # добавление в context.user_data городов, которые называли и добавить на них проверку
+
+all_cities = load_cities()
+
+def get_cities_in_game(past_cities: list[str]) -> dict[str, str]:
+    cities = {}
+    for city, litera in all_cities.items():
+        if city in past_cities:
+            continue
+        cities[city] = litera
+    return cities
 
 
 def city_game(update, context):
     logger.debug("Вызван /city_game")
-    list_city = create_game_dict()
-    past_cities = []
+    past_cities = context.user_data.get('cities') or []
+    cities_in_game = get_cities_in_game(past_cities)
+    
     print('Города, которые уже называли: ', past_cities)
     #stop_game_words = ['stop', 'стоп', 'хватит']
-    if context.args:
-        user_city = context.args[0]
-        if user_city not in past_cities:
-            past_cities.append(user_city)
-            context.user_data['cities'] = past_cities 
-            print('context содержит - ', context.user_data['cities'])
-            update.message.reply_text(f'Вы: {user_city}\n')
-            bot_city = next_city(list_city, user_city)
-            past_cities.append(bot_city)
-            context.user_data['cities'].append(bot_city)
-            update.message.reply_text(f'Бот: {bot_city}\n')
-        else:
-            update.message.reply_text(f'Такой город уже называли')
-    else:
+    if not context.args:
         update.message.reply_text('Вы ничего не ввели!')
+        return
+    
+    user_city = context.args[0]
+    
+    if user_city not in all_cities:
+        update.message.reply_text('Про такой город я не знаю...')
+        return   
+
+    if user_city in past_cities:
+        update.message.reply_text('Такой город уже называли')
+        return
+
+   
+    past_cities.append(user_city)
+    bot_city = next_city(cities_in_game, user_city)
+    past_cities.append(bot_city)
+    context.user_data['cities'] = past_cities
+    update.message.reply_text(f'Бот: {bot_city}\n')
+
+
+        
 
 
