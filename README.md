@@ -11,7 +11,7 @@ MyFirstAwesomeBot - бот несколькими функциями, созда
 4. install all dependences `pip install -r requirments.txt`
 5. add file settings.py with this content:
 ```
-API_KEY = "5802235191:AAElZvnaSZml1s-cGP2NZ2brOPcDvNOaTFc"
+API_KEY = ""
 USER_EMOJI = [':stuck_out_tongue:', ':kissing_heart:', ':blush:', ':yum:']
 
 ```
