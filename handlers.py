@@ -1,10 +1,8 @@
 import csv
 import datetime
-from emoji import emojize
 import ephem
 import logging
-from random import choice, randint, shuffle
-import settings
+from utils import get_smile, play_random_numbers
 
 
 logger = logging.getLogger(__name__)
@@ -12,12 +10,6 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-
-def get_smile(user_data):
-    if 'emoji' not in user_data:
-        smile = choice(settings.USER_EMOJI)
-        return emojize(smile, language='alias')
-    return user_data['emoji']
 
 def talk_to_me(update, context):
     user_text = update.message.text
@@ -30,9 +22,13 @@ def greet_user(update, context):
     logger.debug("Вызван /start")
     first_name = update.message['chat']['first_name']
     update.message.reply_text(f'Здравствуй, {first_name}! {context.user_data["emoji"]}')
-    update.message.reply_text('Доступные команды: \n/start\n /planet\n /wordcount\n /next_full_moon\n /guess_number\n /city_game')
+    update.message.reply_text(
+        'Доступные команды: \n/start\n /planet\n /wordcount\n /next_full_moon\n /guess_number\n /city_game',
+        reply_markup=main_keyboard()
+    )
 
-
+def user_coordinates(update, context):
+    coords = update.message.location
 
 # Определение в каком созвездии находится небесное тело
 def constellation(update, context):
@@ -77,18 +73,6 @@ def next_full_moon(update, context):
     nfm_date = ephem.next_full_moon(date)
     update.message.reply_text(f'Следующее полнолуние {nfm_date}')
 
-
-def play_random_numbers(user_number):
-    bot_number = randint(user_number - 10, user_number + 10)
-    if user_number > bot_number:
-        message = f'Ваше число {user_number}, моё {bot_number}. Вы выиграли!'
-    elif user_number == bot_number:
-        message = f'Ваше число {user_number}, моё {bot_number}. Ничья!'
-    else:
-        message = f'Ваше число {user_number}, моё {bot_number}. Вы проиграли!'
-    return message
-
-
 def guess_number(update, context):
     print(context.args)
     if context.args:
@@ -115,7 +99,6 @@ def load_cities() -> dict[str, str]:
         return cities
 
 # cities = {'a': ['Анапа', 'Анадырь']}
-# shuffle(cities[1])
 
 
 def last_litera(city) -> str:
@@ -126,12 +109,11 @@ def last_litera(city) -> str:
         return city[-2]
 
 
-def next_city(cities_in_game: dict[str, str], user_city) -> str: 
+def next_city(cities_in_game: dict[str, str], user_city) -> str:
     for city in cities_in_game.keys():
         if city.lower()[0] == all_cities[user_city]:
             return city             # возвращать список random choice
 
-# добавление в context.user_data городов, которые называли и добавить на них проверку
 
 all_cities = load_cities()
 
@@ -148,24 +130,24 @@ def city_game(update, context):
     logger.debug("Вызван /city_game")
     past_cities = context.user_data.get('cities') or []
     cities_in_game = get_cities_in_game(past_cities)
-    
+
     print('Города, которые уже называли: ', past_cities)
     #stop_game_words = ['stop', 'стоп', 'хватит']
     if not context.args:
         update.message.reply_text('Вы ничего не ввели!')
         return
-    
+
     user_city = context.args[0]
-    
+
     if user_city not in all_cities:
         update.message.reply_text('Про такой город я не знаю...')
-        return   
+        return
 
     if user_city in past_cities:
         update.message.reply_text('Такой город уже называли')
         return
 
-   
+
     past_cities.append(user_city)
     bot_city = next_city(cities_in_game, user_city)
     past_cities.append(bot_city)
@@ -173,6 +155,6 @@ def city_game(update, context):
     update.message.reply_text(f'Бот: {bot_city}\n')
 
 
-        
+
 
 
