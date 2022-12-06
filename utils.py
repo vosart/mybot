@@ -21,5 +21,6 @@ def play_random_numbers(user_number):
     return message
 
 def main_keyboard():
-    return ReplyKeyboardMarkup([['Следующее полнолуние', KeyboardButton('Мои координаты', request_location=True)]])
+    emo = emojize(":full_moon_with_face:", language='alias')
+    return ReplyKeyboardMarkup([['Следующее полнолуние {emo}'.format(emo=emo), KeyboardButton('Мои координаты', request_location=True)]])
 
