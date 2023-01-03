@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "mybot"
+version = "0.1.0"
+description = ""
+authors = ["Artem Voskresensky <metravs@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+ephem = "^4.1.4"
+emoji = "^2.2.0"
+clarifai-grpc = "^8.11.0"
+python-telegram-bot = "^13.15"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.991"
+wemake-python-styleguide = "^0.17.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

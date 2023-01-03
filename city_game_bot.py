@@ -1,14 +1,15 @@
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, Filters
+
 from telegram import ReplyKeyboardMarkup
+from telegram.ext import CommandHandler, ConversationHandler, Filters, MessageHandler, Updater
+
 import settings
 from handlers import *
-
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 
 CITY_GAME = 1
